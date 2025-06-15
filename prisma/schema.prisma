@@ -8,11 +8,20 @@ generator client {
 }
 
 model User {
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  password     String
+  name         String?
+  role         String        @default("user")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  refreshToken RefreshToken?
+}
+
+model RefreshToken {
   id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  name      String?
-  role      String   @default("user")
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int      @unique
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
