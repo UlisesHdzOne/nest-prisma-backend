@@ -6,11 +6,17 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  ForbiddenException,
+  Request,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { Roles } from 'src/decorators/roles.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -45,9 +51,24 @@ export class UsersController {
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin', 'user')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Actualizar usuario por ID' })
   @ApiResponse({ status: 200, description: 'Usuario actualizado.' })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @Request() req,
+  ) {
+    const isAdmin = req.user.role === 'admin';
+    const isSelf = req.user.userId === +id;
+
+    if (!isAdmin && !isSelf) {
+      throw new ForbiddenException(
+        'No tienes permisos para actualizar este usuario',
+      );
+    }
     return this.usersService.update(+id, updateUserDto);
   }
 }
