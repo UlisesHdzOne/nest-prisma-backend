@@ -12,13 +12,13 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ApiBody } from '@nestjs/swagger';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RolesGuard } from '../guards/roles.guard';
 import { Roles } from '../decorators/roles.decorator';
 import { AuthGuard } from '@nestjs/passport';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -26,13 +26,13 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  @ApiOperation({ summary: 'Registrar nuevo usuario' })
+  @ApiOperation({ summary: 'Registrar nuevo usuario sin rol' })
   @ApiResponse({
     status: 201,
     description: 'Usuario registrado correctamente.',
   })
-  async register(@Body() registerDto: RegisterDto) {
-    return this.authService.register(registerDto);
+  async register(@Body() createUserDto: CreateUserDto) {
+    return this.authService.register(createUserDto);
   }
 
   @Post('login')
@@ -60,6 +60,14 @@ export class AuthController {
   }
 
   @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Acción exclusiva para administradores',
+    description:
+      'Endpoint que solo puede ser accedido por usuarios con rol admin.',
+  })
+  @ApiResponse({ status: 201, description: 'Acción ejecutada con éxito.' })
+  @ApiResponse({ status: 401, description: 'No autorizado.' })
+  @ApiResponse({ status: 403, description: 'Acceso prohibido, solo admins.' })
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('admin')
   @Post('admin-action')
