@@ -22,8 +22,11 @@ import { Roles } from 'src/decorators/roles.decorator';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
   @Post()
-  @ApiOperation({ summary: 'Crear un nuevo usuario' })
+  @ApiOperation({ summary: 'Registra un nuevo usuario con rol' })
   @ApiResponse({ status: 201, description: 'Usuario creado.' })
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
