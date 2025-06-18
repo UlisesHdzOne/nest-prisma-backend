@@ -22,13 +22,19 @@ import { Roles } from 'src/decorators/roles.decorator';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
   @Post()
-  @ApiOperation({ summary: 'Crear un nuevo usuario' })
+  @ApiOperation({ summary: 'Registra un nuevo usuario con rol' })
   @ApiResponse({ status: 201, description: 'Usuario creado.' })
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
   @Get()
   @ApiOperation({ summary: 'Obtener todos los usuarios' })
   @ApiResponse({ status: 200, description: 'Lista de usuarios.' })
@@ -36,6 +42,9 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
   @Delete(':id')
   @ApiOperation({ summary: 'Eliminar usuario por ID' })
   @ApiResponse({ status: 200, description: 'Usuario eliminado.' })
@@ -43,10 +52,20 @@ export class UsersController {
     return this.usersService.remove(+id);
   }
 
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin', 'user')
+  @ApiBearerAuth()
   @Get(':id')
   @ApiOperation({ summary: 'Obtener usuario por ID' })
   @ApiResponse({ status: 200, description: 'Usuario encontrado.' })
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string, @Request() req) {
+    const isAdmin = req.user.role === 'admin';
+    const isSelf = req.user.userId === +id;
+
+    if (!isAdmin && !isSelf) {
+      throw new ForbiddenException('No tienes permisos para ver este usuario');
+    }
+
     return this.usersService.findOne(+id);
   }
 
