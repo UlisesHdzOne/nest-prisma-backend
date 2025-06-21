@@ -6,6 +6,7 @@ import { CreateUserUseCase } from './use-cases/create-user.use-case';
 import { FindAllUsersUseCase } from './use-cases/find-all-users.use-case';
 import { FindOneUserUseCase } from './use-cases/find-one-user.use-case';
 import { UpdateUserUseCase } from './use-cases/update-user.use-case';
+import { DeleteUserUseCase } from './use-cases/delete-user.use-case';
 
 @Module({
   imports: [PrismaModule],
@@ -16,6 +17,7 @@ import { UpdateUserUseCase } from './use-cases/update-user.use-case';
     FindAllUsersUseCase,
     FindOneUserUseCase,
     UpdateUserUseCase,
+    DeleteUserUseCase,
   ],
   exports: [UsersService],
 })
