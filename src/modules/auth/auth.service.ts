@@ -6,6 +6,7 @@ import { CreateUserDto } from 'src/modules/users/dto/create-user.dto';
 import { UsersService } from 'src/modules/users/users.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginUseCase } from './use-cases/login.use-case';
+import { RegisterUseCase } from './use-cases/register.use-case';
 
 @Injectable()
 export class AuthService {
@@ -15,11 +16,12 @@ export class AuthService {
     private readonly usersService: UsersService,
 
     private readonly loginUseCase: LoginUseCase,
+    private readonly registerUseCase: RegisterUseCase,
   ) {}
 
   async register(dto: CreateUserDto) {
     const { name, email, password } = dto;
-    return this.usersService.create({ name, email, password });
+    return this.registerUseCase.execute({ name, email, password });
   }
 
   async login(loginDto: { email: string; password: string }) {
