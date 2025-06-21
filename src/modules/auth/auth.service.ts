@@ -1,3 +1,4 @@
+import { RefreshTokenUseCase } from './use-cases/refresh-token.use-case';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
@@ -17,6 +18,7 @@ export class AuthService {
 
     private readonly loginUseCase: LoginUseCase,
     private readonly registerUseCase: RegisterUseCase,
+    private readonly refreshTokenUseCase: RefreshTokenUseCase,
   ) {}
 
   async register(dto: CreateUserDto) {
@@ -29,38 +31,9 @@ export class AuthService {
   }
 
   async refreshToken(token: string) {
-    // Buscar token en DB
-    const storedToken = await this.prisma.refreshToken.findFirst({
-      where: { token },
-      include: { user: true },
-    });
-
-    if (!storedToken) {
-      throw new UnauthorizedException('Refresh token inválido');
+    if (!token) {
+      throw new UnauthorizedException('Refresh token requerido');
     }
-
-    // Crear nuevo access token
-    const newAccessToken = await this.jwtService.signAsync({
-      sub: storedToken.user.id,
-      email: storedToken.user.email,
-      role: storedToken.user.role,
-    });
-
-    // Opcional: crear nuevo refresh token y actualizar en DB
-    const newRefreshToken = randomBytes(64).toString('hex');
-    await this.prisma.refreshToken.update({
-      where: { id: storedToken.id },
-      data: { token: newRefreshToken },
-    });
-
-    return {
-      access_token: newAccessToken,
-      refresh_token: newRefreshToken,
-      user: {
-        id: storedToken.user.id,
-        email: storedToken.user.email,
-        role: storedToken.user.role,
-      },
-    };
+    return this.refreshTokenUseCase.execute(token);
   }
 }

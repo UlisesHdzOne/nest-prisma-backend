@@ -9,6 +9,7 @@ import { PassportModule } from '@nestjs/passport';
 import { UsersModule } from '../users/users.module';
 import { LoginUseCase } from './use-cases/login.use-case';
 import { RegisterUseCase } from './use-cases/register.use-case';
+import { RefreshTokenUseCase } from './use-cases/refresh-token.use-case';
 @Module({
   imports: [
     PrismaModule,
@@ -26,7 +27,13 @@ import { RegisterUseCase } from './use-cases/register.use-case';
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, JwtStrategy, LoginUseCase, RegisterUseCase],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    LoginUseCase,
+    RegisterUseCase,
+    RefreshTokenUseCase,
+  ],
   controllers: [AuthController],
   exports: [AuthService],
 })
