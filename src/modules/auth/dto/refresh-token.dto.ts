@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class RefreshTokenDto {
   @ApiProperty({
@@ -7,5 +7,6 @@ export class RefreshTokenDto {
     description: 'Token de actualización generado al hacer login',
   })
   @IsString()
+  @IsNotEmpty()
   refresh_token: string;
 }
