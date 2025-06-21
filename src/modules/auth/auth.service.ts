@@ -1,21 +1,12 @@
 import { RefreshTokenUseCase } from './use-cases/refresh-token.use-case';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcryptjs';
-import { randomBytes } from 'crypto';
 import { CreateUserDto } from 'src/modules/users/dto/create-user.dto';
-import { UsersService } from 'src/modules/users/users.service';
-import { PrismaService } from '../prisma/prisma.service';
 import { LoginUseCase } from './use-cases/login.use-case';
 import { RegisterUseCase } from './use-cases/register.use-case';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prisma: PrismaService,
-    private readonly jwtService: JwtService,
-    private readonly usersService: UsersService,
-
     private readonly loginUseCase: LoginUseCase,
     private readonly registerUseCase: RegisterUseCase,
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
