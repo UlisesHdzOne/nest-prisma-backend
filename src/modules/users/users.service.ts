@@ -6,6 +6,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserUseCase } from './use-cases/create-user.use-case';
 import { FindAllUsersUseCase } from './use-cases/find-all-users.use-case';
 import { FindOneUserUseCase } from './use-cases/find-one-user.use-case';
+import { UpdateUserUseCase } from './use-cases/update-user.use-case';
 
 @Injectable()
 export class UsersService {
@@ -14,6 +15,7 @@ export class UsersService {
     private readonly createUserUseCase: CreateUserUseCase,
     private readonly findAllUsersUseCase: FindAllUsersUseCase,
     private readonly findOneUserUseCase: FindOneUserUseCase,
+    private readonly updateUserUseCase: UpdateUserUseCase,
   ) {}
 
   async create(dto: CreateUserDto) {
@@ -35,9 +37,6 @@ export class UsersService {
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
-    return this.prisma.user.update({
-      where: { id },
-      data: updateUserDto,
-    });
+    return this.updateUserUseCase.execute(id, updateUserDto);
   }
 }
