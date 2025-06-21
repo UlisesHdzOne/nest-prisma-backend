@@ -27,7 +27,7 @@ export class CreateUserDto {
   password: string;
 
   @ApiPropertyOptional({
-    example: 'admin o user',
+    example: 'user',
     description: 'Rol del usuario (por defecto: user)',
   })
   @IsOptional()
