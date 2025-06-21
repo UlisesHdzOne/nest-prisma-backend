@@ -4,12 +4,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserUseCase } from './use-cases/create-user.use-case';
+import { FindAllUsersUseCase } from './use-cases/find-all-users.use-case';
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly createUserUseCase: CreateUserUseCase,
+    private readonly findAllUsersUseCase: FindAllUsersUseCase,
   ) {}
 
   async create(dto: CreateUserDto) {
@@ -17,7 +19,7 @@ export class UsersService {
   }
 
   findAll() {
-    return this.prisma.user.findMany();
+    return this.findAllUsersUseCase.execute();
   }
 
   remove(id: number) {

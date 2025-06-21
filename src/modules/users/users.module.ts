@@ -3,11 +3,12 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { PrismaModule } from '../prisma/prisma.module';
 import { CreateUserUseCase } from './use-cases/create-user.use-case';
+import { FindAllUsersUseCase } from './use-cases/find-all-users.use-case';
 
 @Module({
   imports: [PrismaModule],
   controllers: [UsersController],
-  providers: [UsersService, CreateUserUseCase],
+  providers: [UsersService, CreateUserUseCase, FindAllUsersUseCase],
   exports: [UsersService],
 })
 export class UsersModule {}
