@@ -5,6 +5,7 @@ import { randomBytes } from 'crypto';
 import { CreateUserDto } from 'src/modules/users/dto/create-user.dto';
 import { UsersService } from 'src/modules/users/users.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { LoginUseCase } from './use-cases/login.use-case';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +13,8 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
+
+    private readonly loginUseCase: LoginUseCase,
   ) {}
 
   async register(dto: CreateUserDto) {
@@ -20,37 +23,7 @@ export class AuthService {
   }
 
   async login(loginDto: { email: string; password: string }) {
-    const user = await this.prisma.user.findUnique({
-      where: { email: loginDto.email },
-    });
-
-    if (!user || !(await bcrypt.compare(loginDto.password, user.password))) {
-      throw new UnauthorizedException('Credenciales inválidas');
-    }
-
-    const accessToken = await this.jwtService.signAsync({
-      sub: user.id,
-      email: user.email,
-      role: user.role,
-    });
-    const refreshToken = randomBytes(64).toString('hex');
-
-    // Guardar refreshToken en DB o cache vinculado al usuario
-    await this.prisma.refreshToken.upsert({
-      where: { userId: user.id },
-      update: { token: refreshToken },
-      create: { userId: user.id, token: refreshToken },
-    });
-
-    return {
-      access_token: accessToken,
-      refresh_token: refreshToken,
-      user: {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      },
-    };
+    return this.loginUseCase.execute(loginDto);
   }
 
   async refreshToken(token: string) {
