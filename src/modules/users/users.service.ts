@@ -5,6 +5,7 @@ import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserUseCase } from './use-cases/create-user.use-case';
 import { FindAllUsersUseCase } from './use-cases/find-all-users.use-case';
+import { FindOneUserUseCase } from './use-cases/find-one-user.use-case';
 
 @Injectable()
 export class UsersService {
@@ -12,6 +13,7 @@ export class UsersService {
     private readonly prisma: PrismaService,
     private readonly createUserUseCase: CreateUserUseCase,
     private readonly findAllUsersUseCase: FindAllUsersUseCase,
+    private readonly findOneUserUseCase: FindOneUserUseCase,
   ) {}
 
   async create(dto: CreateUserDto) {
@@ -29,7 +31,7 @@ export class UsersService {
   }
 
   findOne(id: number) {
-    return this.prisma.user.findUnique({ where: { id } });
+    return this.findOneUserUseCase.execute(id);
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
