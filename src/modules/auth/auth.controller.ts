@@ -15,10 +15,10 @@ import {
 import { LoginDto } from './dto/login.dto';
 import { ApiBody } from '@nestjs/swagger';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { RolesGuard } from '../guards/roles.guard';
-import { Roles } from '../decorators/roles.decorator';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
 import { AuthGuard } from '@nestjs/passport';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { CreateUserDto } from 'src/modules/users/dto/create-user.dto';
 
 @ApiTags('auth')
 @Controller('auth')
