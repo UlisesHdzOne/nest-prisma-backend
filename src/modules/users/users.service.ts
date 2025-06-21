@@ -1,47 +1,39 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import * as bcrypt from 'bcryptjs';
-import { PrismaService } from '../prisma/prisma.service';
+import { CreateUserUseCase } from './use-cases/create-user.use-case';
+import { FindAllUsersUseCase } from './use-cases/find-all-users.use-case';
+import { FindOneUserUseCase } from './use-cases/find-one-user.use-case';
+import { UpdateUserUseCase } from './use-cases/update-user.use-case';
+import { DeleteUserUseCase } from './use-cases/delete-user.use-case';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
-
-  async createUserWithHashedPassword(data: CreateUserDto) {
-    const hashedPassword = await bcrypt.hash(data.password, 10);
-    return this.prisma.user.create({
-      data: {
-        name: data.name,
-        email: data.email,
-        password: hashedPassword,
-        ...(data.role && { role: data.role }),
-      },
-    });
-  }
+  constructor(
+    private readonly createUserUseCase: CreateUserUseCase,
+    private readonly findAllUsersUseCase: FindAllUsersUseCase,
+    private readonly findOneUserUseCase: FindOneUserUseCase,
+    private readonly updateUserUseCase: UpdateUserUseCase,
+    private readonly deleteUserUseCase: DeleteUserUseCase,
+  ) {}
 
   async create(dto: CreateUserDto) {
-    return this.createUserWithHashedPassword(dto);
+    return this.createUserUseCase.execute(dto);
   }
 
   findAll() {
-    return this.prisma.user.findMany();
+    return this.findAllUsersUseCase.execute();
   }
 
   remove(id: number) {
-    return this.prisma.user.delete({
-      where: { id },
-    });
+    return this.deleteUserUseCase.execute(id);
   }
 
   findOne(id: number) {
-    return this.prisma.user.findUnique({ where: { id } });
+    return this.findOneUserUseCase.execute(id);
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
-    return this.prisma.user.update({
-      where: { id },
-      data: updateUserDto,
-    });
+    return this.updateUserUseCase.execute(id, updateUserDto);
   }
 }
