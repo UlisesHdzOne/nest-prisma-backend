@@ -7,6 +7,7 @@ export class RegisterUseCase {
   constructor(private readonly usersService: UsersService) {}
 
   async execute(dto: CreateUserDto) {
-    return this.usersService.create(dto);
+    const { role, ...data } = dto;
+    return this.usersService.create(data);
   }
 }
