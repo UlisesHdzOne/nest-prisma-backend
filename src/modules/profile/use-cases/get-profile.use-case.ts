@@ -13,6 +13,7 @@ export class GetProfileUseCase {
         name: true,
         email: true,
         role: true,
+        profileImage: true,
       },
     });
   }
