@@ -1,19 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { GetProfileUseCase } from './use-cases/get-profile.use-case';
 
 @Injectable()
 export class ProfileService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly getProfileUseCase: GetProfileUseCase) {}
 
-  async getProfile(userId: number) {
-    return this.prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-      },
-    });
+  getProfile(userId: number) {
+    return this.getProfileUseCase.execute(userId);
   }
 }
