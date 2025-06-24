@@ -53,25 +53,18 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('admin', 'user')
+  @Roles('admin')
   @ApiBearerAuth()
   @Get(':id')
   @ApiOperation({ summary: 'Obtener usuario por ID' })
   @ApiResponse({ status: 200, description: 'Usuario encontrado.' })
   async findOne(@Param('id') id: string, @Request() req) {
-    const isAdmin = req.user.role === 'admin';
-    const isSelf = req.user.userId === +id;
-
-    if (!isAdmin && !isSelf) {
-      throw new ForbiddenException('No tienes permisos para ver este usuario');
-    }
-
     return this.usersService.findOne(+id);
   }
 
   @Patch(':id')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('admin', 'user')
+  @Roles('admin')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Actualizar usuario por ID' })
   @ApiResponse({ status: 200, description: 'Usuario actualizado.' })
@@ -80,14 +73,6 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
     @Request() req,
   ) {
-    const isAdmin = req.user.role === 'admin';
-    const isSelf = req.user.userId === +id;
-
-    if (!isAdmin && !isSelf) {
-      throw new ForbiddenException(
-        'No tienes permisos para actualizar este usuario',
-      );
-    }
     return this.usersService.update(+id, updateUserDto);
   }
 }
